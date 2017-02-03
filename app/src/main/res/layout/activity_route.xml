@@ -1,89 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-  <LinearLayout
+  <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="vertical">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+      android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="15dp">
+        android:orientation="vertical">
 
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="Trigger"/>
-
-      <android.support.design.widget.TextInputLayout
+      <android.support.design.widget.AppBarLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          >
+          android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_title"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Title"/>
-      </android.support.design.widget.TextInputLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-      <android.support.design.widget.TextInputLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          >
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_from"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="From Number"/>
-      </android.support.design.widget.TextInputLayout>
-
-      <android.support.design.widget.TextInputLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          >
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edit_regex"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Regex"/>
-      </android.support.design.widget.TextInputLayout>
-
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="Routing"/>
+      </android.support.design.widget.AppBarLayout>
 
       <LinearLayout
-          android:id="@+id/layout_urls"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:padding="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Trigger"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+          <android.support.design.widget.TextInputEditText
+              android:id="@+id/edit_title"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:inputType="text"
+              android:imeOptions="actionNext"
+              android:hint="Title"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+          <android.support.design.widget.TextInputEditText
+              android:id="@+id/edit_from"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:imeOptions="actionNext"
+              android:inputType="numberDecimal"
+              android:nextFocusDown="@id/edit_title"
+              android:hint="From Number"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+          <android.support.design.widget.TextInputEditText
+              android:id="@+id/edit_regex"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:imeOptions="actionNext"
+              android:nextFocusDown="@id/edit_from"
+              android:inputType="text"
+              android:hint="Regex"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Routing"/>
+
+        <LinearLayout
+            android:id="@+id/layout_urls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button_add_url"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:gravity="center_horizontal"
+            android:text="ADD ANOTHER URL"/>
 
       </LinearLayout>
-
-
-      <android.support.v7.widget.AppCompatButton
-          android:id="@+id/button_add_url"
-          android:layout_width="200dp"
-          android:layout_height="40dp"
-          android:gravity="center_horizontal"
-          android:text="ADD ANOTHER URL"/>
-
     </LinearLayout>
-  </LinearLayout>
-</ScrollView>
+  </ScrollView>
+</android.support.design.widget.CoordinatorLayout>

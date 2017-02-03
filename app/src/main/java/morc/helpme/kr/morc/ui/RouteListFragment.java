@@ -19,10 +19,14 @@ import morc.helpme.kr.morc.model.RouteInfo;
 
 import static android.app.Activity.RESULT_OK;
 
-public class RouteListFragment extends Fragment {
+public class RouteListFragment extends Fragment implements RouteItemClicekListner {
+
+  private static final int REQUEST_NEW = 0;
+  private static final int REQUEST_EDIT = 1;
 
   @BindView(R.id.recyclerview) RecyclerView recyclerView;
   private RoutingAdapter routingAdapter;
+  private int clickedPosition;
 
   @Nullable @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -43,6 +47,7 @@ public class RouteListFragment extends Fragment {
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     routingAdapter = new RoutingAdapter();
+    routingAdapter.setRouteItemClicekListner(this);
     recyclerView.setAdapter(routingAdapter);
 
     List<String> urlList = new ArrayList<>(2);
@@ -52,13 +57,32 @@ public class RouteListFragment extends Fragment {
   }
 
   @OnClick(R.id.fab) void onClickFAB() {
-    startActivityForResult(new Intent(getActivity(), RouteActivity.class), 0);
+    startActivityForResult(new Intent(getActivity(), RouteActivity.class), REQUEST_NEW);
   }
 
   @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if(resultCode == RESULT_OK && data.getParcelableExtra("Route") != null) {
-      routingAdapter.addRouteInfo((RouteInfo) data.getParcelableExtra("Route"));
+    if(resultCode == RESULT_OK) {
+      RouteInfo routeInfo = data.getParcelableExtra("Route");
+      switch (requestCode) {
+        case REQUEST_NEW:
+          if(routeInfo != null)
+            routingAdapter.addRouteInfo(routeInfo);
+          break;
+        case REQUEST_EDIT:
+          if(data.getIntExtra("remove", 0) == 1)
+            routingAdapter.remove(clickedPosition);
+          else if(routeInfo != null)
+            routingAdapter.setRouteInfo(clickedPosition, routeInfo);
+          break;
+      }
     }
+  }
+
+  @Override public void onClickRouteInfo(int poisition, RouteInfo routeInfo) {
+    clickedPosition = poisition;
+    Intent intent = new Intent(getActivity(), RouteActivity.class);
+    intent.putExtra("Route", routeInfo);
+    startActivityForResult(intent, REQUEST_EDIT);
   }
 }

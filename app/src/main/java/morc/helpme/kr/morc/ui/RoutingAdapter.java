@@ -16,6 +16,7 @@ import morc.helpme.kr.morc.model.RouteInfo;
 public class RoutingAdapter extends RecyclerView.Adapter<RoutingAdapter.ViewHolder> {
 
   private List<RouteInfo> routeInfoList;
+  private RouteItemClicekListner routeItemClicekListner;
 
   public RoutingAdapter() {
     this(new ArrayList<RouteInfo>());
@@ -25,9 +26,23 @@ public class RoutingAdapter extends RecyclerView.Adapter<RoutingAdapter.ViewHold
     this.routeInfoList = routeInfoList;
   }
 
+  public void setRouteItemClicekListner(RouteItemClicekListner routeItemClicekListner) {
+    this.routeItemClicekListner = routeItemClicekListner;
+  }
+
   public void addRouteInfo(RouteInfo routeInfo) {
     routeInfoList.add(routeInfo);
     notifyItemInserted(getItemCount() - 1);
+  }
+
+  public void setRouteInfo(int position, RouteInfo routeInfo) {
+    routeInfoList.set(position, routeInfo);
+    notifyItemChanged(position);
+  }
+
+  public void remove(int position) {
+    routeInfoList.remove(position);
+    notifyItemRemoved(position);
   }
 
   @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -47,15 +62,20 @@ public class RoutingAdapter extends RecyclerView.Adapter<RoutingAdapter.ViewHold
     return routeInfoList.size();
   }
 
-  public static class ViewHolder extends RecyclerView.ViewHolder {
+  class ViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.text_title) TextView titleTextView;
     @BindView(R.id.text_info) TextView infoTextView;
     @BindView(R.id.switch_enabled) SwitchCompat enabledSwitch;
 
-    public ViewHolder(View itemView) {
+    ViewHolder(View itemView) {
       super(itemView);
       ButterKnife.bind(this, itemView);
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View view) {
+          routeItemClicekListner.onClickRouteInfo(getAdapterPosition(), routeInfoList.get(getAdapterPosition()));
+        }
+      });
     }
   }
 
