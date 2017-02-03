@@ -2,6 +2,7 @@ package morc.helpme.kr.morc.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RouteInfo implements Parcelable {
@@ -22,10 +23,11 @@ public class RouteInfo implements Parcelable {
     }
   };
 
-  public RouteInfo(String title, String from, String regex, boolean enabled) {
+  public RouteInfo(String title, String from, String regex, List<String> urlList, boolean enabled) {
     this.title = title;
     this.from = from;
     this.regex = regex;
+    this.urlList = urlList;
     this.enabled = enabled;
   }
 
@@ -45,10 +47,11 @@ public class RouteInfo implements Parcelable {
     parcel.writeBooleanArray(new boolean[] {enabled});
   }
 
-  public void readFromParcel(Parcel parcel) {
+  private void readFromParcel(Parcel parcel) {
     title = parcel.readString();
     from = parcel.readString();
     regex = parcel.readString();
+    urlList = new ArrayList<>();
     parcel.readStringList(urlList);
     boolean[] temp = new boolean[1];
     parcel.readBooleanArray(temp);

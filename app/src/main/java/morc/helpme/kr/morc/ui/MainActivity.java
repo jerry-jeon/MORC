@@ -31,7 +31,6 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity {
 
   @BindView(R.id.toolbar) Toolbar toolbar;
-  @BindView(R.id.fab) FloatingActionButton fab;
   @BindView(R.id.tabs) TabLayout tabLayout;
   @BindView(R.id.viewPager) ViewPager viewPager;
 
@@ -46,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
     initializeLibraries();
     initializeUI();
-  }
-
-  @OnClick(R.id.fab) void onClickFAB() {
-    startActivity(new Intent(this, RouteActivity.class));
   }
 
   private void initializeLibraries() {
