@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.RouteInfo;
 
-public class RoutingFragment extends Fragment {
+public class RouteListFragment extends Fragment {
 
   @BindView(R.id.recyclerview) RecyclerView recyclerView;
   private RoutingAdapter routingAdapter;
@@ -21,7 +21,7 @@ public class RoutingFragment extends Fragment {
   @Nullable @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_routing, container, false);
+    return inflater.inflate(R.layout.fragment_route_list, container, false);
   }
 
   @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
