@@ -12,19 +12,19 @@
       android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_description"
+        android:id="@+id/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/text_sub"
+        android:id="@+id/text_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
   </LinearLayout>
 
   <android.support.v7.widget.SwitchCompat
-      android:id="@+id/switch_routing"
+      android:id="@+id/switch_enabled"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_alignParentRight="true"

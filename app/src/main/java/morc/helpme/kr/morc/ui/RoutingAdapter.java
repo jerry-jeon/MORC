@@ -5,7 +5,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,9 +38,9 @@ public class RoutingAdapter extends RecyclerView.Adapter<RoutingAdapter.ViewHold
 
   @Override public void onBindViewHolder(ViewHolder holder, int position) {
     RouteInfo routeInfo = routeInfoList.get(position);
-    holder.descrptionTextView.setText(routeInfo.description);
-    holder.subTextView.setText(routeInfo.sub);
-    holder.routeSwitch.setChecked(routeInfo.route);
+    holder.titleTextView.setText(routeInfo.title);
+    holder.infoTextView.setText(routeInfo.from + ", " + routeInfo.regex);
+    holder.enabledSwitch.setChecked(routeInfo.enabled);
   }
 
   @Override public int getItemCount() {
@@ -50,9 +49,9 @@ public class RoutingAdapter extends RecyclerView.Adapter<RoutingAdapter.ViewHold
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.text_description) TextView descrptionTextView;
-    @BindView(R.id.text_sub) TextView subTextView;
-    @BindView(R.id.switch_routing) SwitchCompat routeSwitch;
+    @BindView(R.id.text_title) TextView titleTextView;
+    @BindView(R.id.text_info) TextView infoTextView;
+    @BindView(R.id.switch_enabled) SwitchCompat enabledSwitch;
 
     public ViewHolder(View itemView) {
       super(itemView);

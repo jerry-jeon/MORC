@@ -1,14 +1,20 @@
 package morc.helpme.kr.morc.model;
 
-public class RouteInfo {
-  public String description;
-  public String sub;
-  public boolean route;
+import java.util.List;
 
-  public RouteInfo(String description, String sub, boolean route) {
-    this.description = description;
-    this.sub = sub;
-    this.route = route;
+public class RouteInfo {
+  public String title;
+  public String from;
+  public String regex;
+  public List<String> urlList;
+  public boolean enabled;
+
+  public RouteInfo(String title, String from, String regex, boolean enabled) {
+    this.title = title;
+    this.from = from;
+    this.regex = regex;
+    this.enabled = enabled;
   }
+
 
 }
