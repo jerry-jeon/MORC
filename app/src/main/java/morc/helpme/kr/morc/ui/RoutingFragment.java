@@ -39,6 +39,6 @@ public class RoutingFragment extends Fragment {
     routingAdapter = new RoutingAdapter();
     recyclerView.setAdapter(routingAdapter);
 
-    routingAdapter.addRouteInfo(new RouteInfo("des", "sub", true));
+    routingAdapter.addRouteInfo(new RouteInfo("des", "010", "sub", true));
   }
 }
