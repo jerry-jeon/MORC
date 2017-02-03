@@ -5,7 +5,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         helpmeService.test().enqueue(new Callback<ResponseBody>() {
           @Override
           public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-            Log.d("temp", " : " + response.code());
+            Log.d("code : " + response.code());
           }
 
           @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
