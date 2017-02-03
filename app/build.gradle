@@ -26,4 +26,6 @@ dependencies {
   compile 'com.android.support:design:24.0.0'
   compile 'com.squareup.retrofit2:retrofit:2.1.0'
   compile 'com.karumi:dexter:3.0.2'
+  compile 'com.jakewharton:butterknife:8.5.1'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
