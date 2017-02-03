@@ -24,6 +24,9 @@
       </intent-filter>
     </activity>
 
+    <activity android:name=".ui.RouteActivity"
+        android:theme="@style/AppTheme.NoActionBar"/>
+
     <receiver android:name=".receiver.SMSListener"
         android:permission="android.permission.BROADCAST_SMS">
       <intent-filter android:priority="1000">

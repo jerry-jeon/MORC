@@ -1,6 +1,7 @@
 package morc.helpme.kr.morc.ui;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -48,17 +49,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @OnClick(R.id.fab) void onClickFAB() {
-    helpmeService.test().enqueue(new Callback<ResponseBody>() {
-      @Override
-      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-        Log.d("code : " + response.code());
-      }
-
-      @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-        t.printStackTrace();
-      }
-    });
-
+    startActivity(new Intent(this, RouteActivity.class));
   }
 
   private void initializeLibraries() {
@@ -73,6 +64,19 @@ public class MainActivity extends AppCompatActivity {
         .build();
 
     helpmeService = retrofit.create(HelpmeService.class);
+
+    /*
+    helpmeService.test().enqueue(new Callback<ResponseBody>() {
+      @Override
+      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        Log.d("code : " + response.code());
+      }
+
+      @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
+        t.printStackTrace();
+      }
+    });
+    */
   }
 
   private void initializeDexter() {
