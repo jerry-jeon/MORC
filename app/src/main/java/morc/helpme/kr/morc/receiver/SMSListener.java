@@ -8,15 +8,19 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import morc.helpme.kr.morc.model.LogInfo;
 import morc.helpme.kr.morc.model.RouteInfo;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SMSListener extends BroadcastReceiver {
 
@@ -25,7 +29,7 @@ public class SMSListener extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    initializeRetrofit(context);
+    initializeRetrofit();
 
     if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
       Bundle bundle = intent.getExtras();
@@ -50,7 +54,7 @@ public class SMSListener extends BroadcastReceiver {
               final RouteInfo routeInfo = routeInfoRealmResults.get(j);
               if(routeInfo.satisfyCondition(msgFrom, msgBody)) {
                 for(int k = 0; k < routeInfo.urlList.size(); k++) {
-                  helpmeService.dynamic(routeInfo.urlList.get(k).str).enqueue(new Callback<ResponseBody>() {
+                  helpmeService.dynamic(routeInfo.urlList.get(k).str, routeInfo.authorization).enqueue(new Callback<ResponseBody>() {
                     @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       Realm realm1 = Realm.getDefaultInstance();
                       realm1.beginTransaction();
@@ -82,12 +86,24 @@ public class SMSListener extends BroadcastReceiver {
     }
   }
 
-  private void initializeRetrofit(Context context) {
-    //TODO 통신 확인 해볼 필요 있음
+  private void initializeRetrofit() {
     if(retrofit == null) {
-      retrofit = new Retrofit.Builder().baseUrl("http://localhost").build();
+      HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+      interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+      OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+      retrofit = new Retrofit.Builder()
+          .baseUrl("http://localhost")
+          .client(client)
+          .addConverterFactory(GsonConverterFactory.create())
+          .build();
     }
 
     helpmeService = retrofit.create(HelpmeService.class);
+  }
+
+  private String formattedDate() {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    return format.format(new Date());
   }
 }

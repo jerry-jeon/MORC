@@ -37,6 +37,7 @@ public class RouteActivity extends AppCompatActivity {
   @BindView(R.id.edit_title) TextInputEditText editTitle;
   @BindView(R.id.edit_from) TextInputEditText editFrom;
   @BindView(R.id.edit_regex) TextInputEditText editRegex;
+  @BindView(R.id.edit_authorization) TextInputEditText editAuthorization;
   private int type;
 
   private List<TextInputEditText> urlViewList;
@@ -108,6 +109,7 @@ public class RouteActivity extends AppCompatActivity {
       editTitle.setText(routeInfo.title);
       editFrom.setText(routeInfo.from);
       editRegex.setText(routeInfo.regex);
+      editAuthorization.setText(routeInfo.authorization);
       for(int i = 0; i < routeInfo.urlList.size(); i++) {
         addUrlView(routeInfo.urlList.get(i).str);
       }
@@ -150,16 +152,16 @@ public class RouteActivity extends AppCompatActivity {
             realm.beginTransaction();
 
             RouteInfo newRouteInfo = realm.createObject(RouteInfo.class, getRouteInfoNextKey());
-            newRouteInfo.initialize(editTitle.getText().toString(),
-            editFrom.getText().toString(), editRegex.getText().toString(), getUrlsFromViewList(), true);
+            newRouteInfo.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
+                editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
 
             realm.commitTransaction();
             intent.putExtra("Route_id", newRouteInfo.id);
             break;
           case TYPE_EDIT:
             realm.beginTransaction();
-            routeInfo.initialize(editTitle.getText().toString(),
-                editFrom.getText().toString(), editRegex.getText().toString(), getUrlsFromViewList(), true);
+            routeInfo.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
+                editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
             realm.commitTransaction();
             break;
         }

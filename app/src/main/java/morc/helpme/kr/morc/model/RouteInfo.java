@@ -11,13 +11,16 @@ public class RouteInfo extends RealmObject {
   public String title;
   public String from;
   public String regex;
+  public String authorization;
   public RealmList<RealmString> urlList;
   public boolean enabled;
 
-  public void initialize(String title, String from, String regex, RealmList<RealmString> urlList, boolean enabled) {
+  public void initialize(String title, String from, String regex,
+      String authorization, RealmList<RealmString> urlList, boolean enabled) {
     this.title = title;
     this.from = from;
     this.regex = regex;
+    this.authorization = authorization;
     this.urlList = urlList;
     this.enabled = enabled;
   }
