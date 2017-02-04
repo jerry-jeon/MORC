@@ -11,6 +11,10 @@ import io.realm.RealmResults;
 import morc.helpme.kr.morc.Log;
 import morc.helpme.kr.morc.model.RouteInfo;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SMSListener extends BroadcastReceiver {
@@ -44,24 +48,19 @@ public class SMSListener extends BroadcastReceiver {
             for(int j = 0; j < routeInfoRealmResults.size(); j++) {
               RouteInfo routeInfo = routeInfoRealmResults.get(j);
               if(routeInfo.satisfyCondition(msgFrom, msgBody)) {
-                Log.d("라우라우라우트");
+                for(int k = 0; k < routeInfo.urlList.size(); k++) {
+                  helpmeService.dynamic(routeInfo.urlList.get(k).str).enqueue(new Callback<ResponseBody>() {
+                    @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                      Log.d("code : " + response.code());
+                    }
 
+                    @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
+                      t.printStackTrace();
+                    }
+                  });
+                }
               }
             }
-
-            /*
-            Toast.makeText(context, msgBody, Toast.LENGTH_LONG).show();
-            helpmeService.test().enqueue(new Callback<ResponseBody>() {
-              @Override
-              public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d("code : " + response.code());
-              }
-
-              @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-              }
-            });
-            */
           }
         } catch(Exception e) {
           e.printStackTrace();
@@ -71,25 +70,11 @@ public class SMSListener extends BroadcastReceiver {
   }
 
   private void initializeRetrofit(Context context) {
-
     //TODO 통신 확인 해볼 필요 있음
     if(retrofit == null) {
-      retrofit = new Retrofit.Builder().baseUrl("http://192.168.1.11:9000").build();
+      retrofit = new Retrofit.Builder().baseUrl("http://localhost").build();
     }
 
     helpmeService = retrofit.create(HelpmeService.class);
-
-    /*
-    helpmeService.test().enqueue(new Callback<ResponseBody>() {
-      @Override
-      public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-        Log.d("code : " + response.code());
-      }
-
-      @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-        t.printStackTrace();
-      }
-    });
-    */
   }
 }
