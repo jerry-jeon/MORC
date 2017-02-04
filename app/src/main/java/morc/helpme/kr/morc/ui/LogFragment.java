@@ -1,8 +1,10 @@
 package morc.helpme.kr.morc.ui;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
@@ -47,5 +50,21 @@ public class LogFragment extends Fragment {
       }
     });
     recyclerView.setAdapter(logAdapter);
+  }
+
+  @OnClick(R.id.fab) void onClickFAB() {
+    new AlertDialog.Builder(getContext())
+        .setTitle("삭제")
+        .setMessage("정말 전부 삭제하시겠습니까?")
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+          @Override public void onClick(DialogInterface dialogInterface, int i) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            realm.delete(LogInfo.class);
+            realm.commitTransaction();
+          }
+        })
+        .setNegativeButton(android.R.string.cancel, null)
+        .show();
   }
 }
