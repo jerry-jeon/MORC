@@ -71,7 +71,7 @@ public class SMSListener extends BroadcastReceiver {
                       realm1.beginTransaction();
 
                       LogInfo logInfo = realm1.createObject(LogInfo.class);
-                      logInfo.initialize(routeInfo.title, formattedDate(), LogInfo.ERROR, t.getLocalizedMessage());
+                      logInfo.initialize(routeInfo.title, formattedDate(), LogInfo.ERROR, t.toString());
 
                       realm1.commitTransaction();
                     }
