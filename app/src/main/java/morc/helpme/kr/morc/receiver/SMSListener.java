@@ -10,6 +10,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import morc.helpme.kr.morc.model.LogInfo;
 import morc.helpme.kr.morc.model.RouteInfo;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
@@ -60,7 +61,7 @@ public class SMSListener extends BroadcastReceiver {
                       realm1.beginTransaction();
 
                       LogInfo logInfo = realm1.createObject(LogInfo.class);
-                      logInfo.initialize(routeInfo.title, new Date().toString(), String.valueOf(response.code()), null);
+                      logInfo.initialize(routeInfo.title, formattedDate(), String.valueOf(response.code()), null);
 
                       realm1.commitTransaction();
                     }
@@ -70,7 +71,7 @@ public class SMSListener extends BroadcastReceiver {
                       realm1.beginTransaction();
 
                       LogInfo logInfo = realm1.createObject(LogInfo.class);
-                      logInfo.initialize(routeInfo.title, new Date().toString(), LogInfo.ERROR, t.getLocalizedMessage());
+                      logInfo.initialize(routeInfo.title, formattedDate(), LogInfo.ERROR, t.getLocalizedMessage());
 
                       realm1.commitTransaction();
                     }
@@ -103,7 +104,7 @@ public class SMSListener extends BroadcastReceiver {
   }
 
   private String formattedDate() {
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.KOREA);
     return format.format(new Date());
   }
 }
