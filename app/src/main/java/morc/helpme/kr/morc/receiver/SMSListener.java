@@ -3,16 +3,14 @@ package morc.helpme.kr.morc.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.widget.Toast;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import morc.helpme.kr.morc.Log;
+import morc.helpme.kr.morc.model.RouteInfo;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class SMSListener extends BroadcastReceiver {
@@ -24,19 +22,34 @@ public class SMSListener extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     initializeRetrofit(context);
 
-    if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")){
-      Bundle bundle = intent.getExtras();           //---get the SMS message passed in---
-      SmsMessage[] msgs;
-      String msg_from;
-      if (bundle != null){
-        //---retrieve the SMS message received---
+    if(intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
+      Bundle bundle = intent.getExtras();
+      if (bundle != null) {
         try{
           Object[] pdus = (Object[]) bundle.get("pdus");
-          msgs = new SmsMessage[pdus.length];
-          for(int i=0; i<msgs.length; i++){
-            msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-            msg_from = msgs[i].getOriginatingAddress();
-            String msgBody = msgs[i].getMessageBody();
+          SmsMessage[] messages = new SmsMessage[pdus.length];
+          for(int i = 0; i < messages.length; i++) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+              messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i], bundle.getString("format"));
+            } else {
+              messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+            }
+
+            String msgFrom = messages[i].getOriginatingAddress();
+            String msgBody = messages[i].getMessageBody();
+
+            Realm realm = Realm.getDefaultInstance();
+            RealmResults<RouteInfo> routeInfoRealmResults = realm.where(RouteInfo.class).equalTo("enabled", true).findAll();
+
+            for(int j = 0; j < routeInfoRealmResults.size(); j++) {
+              RouteInfo routeInfo = routeInfoRealmResults.get(j);
+              if(routeInfo.satisfyCondition(msgFrom, msgBody)) {
+                Log.d("라우라우라우트");
+
+              }
+            }
+
+            /*
             Toast.makeText(context, msgBody, Toast.LENGTH_LONG).show();
             helpmeService.test().enqueue(new Callback<ResponseBody>() {
               @Override
@@ -48,8 +61,9 @@ public class SMSListener extends BroadcastReceiver {
                 t.printStackTrace();
               }
             });
+            */
           }
-        }catch(Exception e){
+        } catch(Exception e) {
           e.printStackTrace();
         }
       }

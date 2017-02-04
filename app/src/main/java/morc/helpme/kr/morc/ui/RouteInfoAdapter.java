@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.RouteInfo;
@@ -25,27 +27,9 @@ public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.View
     this.routeItemClicekListner = routeItemClicekListner;
   }
 
-  /*
-  public void addRouteInfo(RouteInfo routeInfo) {
-    routeInfoList.add(routeInfo);
-    notifyItemInserted(getItemCount() - 1);
-  }
-
-  public void setRouteInfo(int position, RouteInfo routeInfo) {
-    routeInfoList.set(position, routeInfo);
-    notifyItemChanged(position);
-  }
-
-  public void remove(int position) {
-    routeInfoList.remove(position);
-    notifyItemRemoved(position);
-  }
-  */
-
   @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_route, parent, false);
-    ViewHolder vh = new ViewHolder(v);
-    return vh;
+    return new ViewHolder(v);
   }
 
   @Override public void onBindViewHolder(ViewHolder holder, int position) {
@@ -64,6 +48,13 @@ public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.View
     @BindView(R.id.text_title) TextView titleTextView;
     @BindView(R.id.text_info) TextView infoTextView;
     @BindView(R.id.switch_enabled) SwitchCompat enabledSwitch;
+
+    @OnCheckedChanged(R.id.switch_enabled) void onCheckChange(boolean isChecked) {
+      Realm realm = Realm.getDefaultInstance();
+      realm.beginTransaction();
+      routeInfoRealmResults.get(getAdapterPosition()).enabled = isChecked;
+      realm.commitTransaction();
+    }
 
     ViewHolder(View itemView) {
       super(itemView);
