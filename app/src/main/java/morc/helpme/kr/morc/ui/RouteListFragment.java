@@ -12,21 +12,17 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import java.util.ArrayList;
-import java.util.List;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.RouteInfo;
 
-import static android.app.Activity.RESULT_OK;
 
 public class RouteListFragment extends Fragment implements RouteItemClicekListner {
 
-  private static final int REQUEST_NEW = 0;
-  private static final int REQUEST_EDIT = 1;
-
   @BindView(R.id.recyclerview) RecyclerView recyclerView;
-  private RoutingAdapter routingAdapter;
-  private int clickedPosition;
+  private RouteInfoAdapter routeInfoAdapter;
 
   @Nullable @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -42,47 +38,31 @@ public class RouteListFragment extends Fragment implements RouteItemClicekListne
   }
 
   private void setupUI() {
-    // use this setting to improve performance if you know that changes
-    // in content do not change the layout size of the RecyclerView
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    routingAdapter = new RoutingAdapter();
-    routingAdapter.setRouteItemClicekListner(this);
-    recyclerView.setAdapter(routingAdapter);
 
-    List<String> urlList = new ArrayList<>(2);
-    urlList.add("url1");
-    urlList.add("url2");
-    routingAdapter.addRouteInfo(new RouteInfo("des", "010", "sub", urlList, true));
+    Realm realm = Realm.getDefaultInstance();
+
+    RealmResults<RouteInfo> routeInfoRealmResults = realm.where(RouteInfo.class).findAll();
+    routeInfoAdapter = new RouteInfoAdapter(routeInfoRealmResults);
+    routeInfoRealmResults.addChangeListener(new RealmChangeListener<RealmResults<RouteInfo>>() {
+      @Override public void onChange(RealmResults<RouteInfo> element) {
+        routeInfoAdapter.notifyDataSetChanged();
+      }
+    });
+
+    routeInfoAdapter.setRouteItemClicekListner(this);
+    recyclerView.setAdapter(routeInfoAdapter);
+
   }
 
   @OnClick(R.id.fab) void onClickFAB() {
-    startActivityForResult(new Intent(getActivity(), RouteActivity.class), REQUEST_NEW);
+    startActivity(new Intent(getActivity(), RouteActivity.class));
   }
 
-  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if(resultCode == RESULT_OK) {
-      RouteInfo routeInfo = data.getParcelableExtra("Route");
-      switch (requestCode) {
-        case REQUEST_NEW:
-          if(routeInfo != null)
-            routingAdapter.addRouteInfo(routeInfo);
-          break;
-        case REQUEST_EDIT:
-          if(data.getIntExtra("remove", 0) == 1)
-            routingAdapter.remove(clickedPosition);
-          else if(routeInfo != null)
-            routingAdapter.setRouteInfo(clickedPosition, routeInfo);
-          break;
-      }
-    }
-  }
-
-  @Override public void onClickRouteInfo(int poisition, RouteInfo routeInfo) {
-    clickedPosition = poisition;
+  @Override public void onClickRouteInfo(int position, RouteInfo routeInfo) {
     Intent intent = new Intent(getActivity(), RouteActivity.class);
-    intent.putExtra("Route", routeInfo);
-    startActivityForResult(intent, REQUEST_EDIT);
+    intent.putExtra("Route_id", routeInfo.id);
+    startActivity(intent);
   }
 }

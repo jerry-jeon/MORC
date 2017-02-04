@@ -1,6 +1,5 @@
 package morc.helpme.kr.morc.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,10 +19,12 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
+import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.List;
-import morc.helpme.kr.morc.Log;
 import morc.helpme.kr.morc.R;
+import morc.helpme.kr.morc.model.RealmString;
 import morc.helpme.kr.morc.model.RouteInfo;
 
 public class RouteActivity extends AppCompatActivity {
@@ -39,6 +40,7 @@ public class RouteActivity extends AppCompatActivity {
   private int type;
 
   private List<TextInputEditText> urlViewList;
+  private RouteInfo routeInfo;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -57,13 +59,13 @@ public class RouteActivity extends AppCompatActivity {
 
     urlViewList = new ArrayList<>();
 
-    if(getIntent().getParcelableExtra("Route") == null) {
+    if(getIntent().hasExtra("Route_id")) {
+      type = TYPE_EDIT;
+      readRouteInfo(getIntent().getIntExtra("Route_id", 0));
+    } else {
       type = TYPE_NEW;
       addUrlView();
       getSupportActionBar().setTitle("Add New Routing Logic");
-    } else {
-      type = TYPE_EDIT;
-      readRouteInfo((RouteInfo) getIntent().getParcelableExtra("Route"));
     }
   }
 
@@ -99,20 +101,29 @@ public class RouteActivity extends AppCompatActivity {
     layout.addView(view);
   }
 
-  private void readRouteInfo(RouteInfo routeInfo) {
-    editTitle.setText(routeInfo.title);
-    editFrom.setText(routeInfo.from);
-    editRegex.setText(routeInfo.regex);
-    for(int i = 0; i < routeInfo.urlList.size(); i++) {
-      addUrlView(routeInfo.urlList.get(i));
+  private void readRouteInfo(int id) {
+    Realm realm = Realm.getDefaultInstance();
+    try {
+      routeInfo = realm.where(RouteInfo.class).equalTo("id", id).findFirst();
+      editTitle.setText(routeInfo.title);
+      editFrom.setText(routeInfo.from);
+      editRegex.setText(routeInfo.regex);
+      for(int i = 0; i < routeInfo.urlList.size(); i++) {
+        addUrlView(routeInfo.urlList.get(i).str);
+      }
+      getSupportActionBar().setTitle(routeInfo.title);
+    } finally {
+      realm.close();
     }
-    getSupportActionBar().setTitle(routeInfo.title);
   }
 
-  private List<String> getUrlsFromViewList() {
-    List<String> urlList = new ArrayList<>(urlViewList.size());
+  private RealmList<RealmString> getUrlsFromViewList() {
+    Realm realm = Realm.getDefaultInstance();
+    RealmList<RealmString> urlList = new RealmList<>();
     for(int i = 0; i < urlViewList.size(); i++) {
-      urlList.add(urlViewList.get(i).getText().toString());
+      RealmString realmString = realm.createObject(RealmString.class);
+      realmString.str = urlViewList.get(i).getText().toString();
+      urlList.add(realmString);
     }
     return urlList;
   }
@@ -132,24 +143,39 @@ public class RouteActivity extends AppCompatActivity {
   @Override public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_save:
-        //TODO 예외처리
-        RouteInfo routeInfo = new RouteInfo(editTitle.getText().toString(),
+        final Realm realm = Realm.getDefaultInstance();
+        Intent intent = new Intent();
+        switch (type) {
+          case TYPE_NEW:
+            realm.beginTransaction();
+
+            RouteInfo newRouteInfo = realm.createObject(RouteInfo.class, getRouteInfoNextKey());
+            newRouteInfo.initialize(editTitle.getText().toString(),
             editFrom.getText().toString(), editRegex.getText().toString(), getUrlsFromViewList(), true);
 
-        Intent intent = new Intent();
-        intent.putExtra("Route", routeInfo);
-        setResult(RESULT_OK, intent);
+            realm.commitTransaction();
+            intent.putExtra("Route_id", newRouteInfo.id);
+            break;
+          case TYPE_EDIT:
+            realm.beginTransaction();
+            routeInfo.initialize(editTitle.getText().toString(),
+                editFrom.getText().toString(), editRegex.getText().toString(), getUrlsFromViewList(), true);
+            realm.commitTransaction();
+            break;
+        }
         finish();
         return true;
       case R.id.action_delete:
+        //TODO realm emove
         new AlertDialog.Builder(this)
             .setTitle("삭제")
             .setMessage("정말 삭제하시겠습니까?")
             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
               @Override public void onClick(DialogInterface dialogInterface, int i) {
-                Intent removeIntent = new Intent();
-                removeIntent.putExtra("remove", 1);
-                setResult(RESULT_OK, removeIntent);
+                Realm realm1 = Realm.getDefaultInstance();
+                realm1.beginTransaction();
+                routeInfo.deleteFromRealm();
+                realm1.commitTransaction();
                 finish();
               }
             })
@@ -158,6 +184,16 @@ public class RouteActivity extends AppCompatActivity {
         return true;
       default:
         return super.onOptionsItemSelected(item);
+    }
+  }
+
+  private int getRouteInfoNextKey()
+  {
+    try {
+      Realm realm = Realm.getDefaultInstance();
+      return realm.where(RouteInfo.class).max("id").intValue() + 1;
+    } catch (Exception e) {
+      return 0;
     }
   }
 }
