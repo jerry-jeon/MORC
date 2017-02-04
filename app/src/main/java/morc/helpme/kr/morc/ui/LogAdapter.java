@@ -1,7 +1,7 @@
 package morc.helpme.kr.morc.ui;
 
 import android.support.transition.TransitionManager;
-import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +33,9 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
   @Override public void onBindViewHolder(ViewHolder holder, final int position) {
     LogInfo logInfo = logInfoRealmResults.get(position);
     holder.titleTextView.setText(logInfo.title);
-    holder.dateTextView.setText(logInfo.date + " - " + logInfo.type);
+    holder.dateTextView.setText(logInfo.date + " - ");
+    holder.typeTextView.setText(logInfo.type);
+    holder.typeTextView.setTextColor(logInfo.getColor());
     holder.expandButton.setVisibility(logInfo.exception != null ? View.VISIBLE : View.GONE);
     holder.exceptionTextView.setText(logInfo.exception);
 
@@ -58,7 +60,8 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
 
     @BindView(R.id.text_title) TextView titleTextView;
     @BindView(R.id.text_date) TextView dateTextView;
-    @BindView(R.id.button_expand) AppCompatButton expandButton;
+    @BindView(R.id.text_type) TextView typeTextView;
+    @BindView(R.id.button_expand) AppCompatImageButton expandButton;
     @BindView(R.id.text_exception) TextView exceptionTextView;
 
     public ViewHolder(View itemView) {
