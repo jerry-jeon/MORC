@@ -9,29 +9,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import java.util.ArrayList;
-import java.util.List;
+import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.LogInfo;
 
 public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
 
   private RecyclerView recyclerView;
-  private List<LogInfo> logInfoList;
+  private RealmResults<LogInfo> logInfoRealmResults;
   private int expandedPosition = -1;
 
-  public LogAdapter(RecyclerView recyclerView) {
-    this(new ArrayList<LogInfo>());
+  public LogAdapter(RecyclerView recyclerView, RealmResults<LogInfo> logInfoRealmResults) {
     this.recyclerView = recyclerView;
-  }
-
-  public LogAdapter(List<LogInfo> logInfoList) {
-    this.logInfoList = logInfoList;
-  }
-
-  public void addLogInfo(LogInfo logInfo) {
-    logInfoList.add(logInfo);
-    notifyItemInserted(getItemCount() - 1);
+    this.logInfoRealmResults = logInfoRealmResults;
   }
 
   @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,7 +31,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
   }
 
   @Override public void onBindViewHolder(ViewHolder holder, final int position) {
-    LogInfo logInfo = logInfoList.get(position);
+    LogInfo logInfo = logInfoRealmResults.get(position);
     holder.titleTextView.setText(logInfo.title);
     holder.dateTextView.setText(logInfo.date + " - " + logInfo.type);
     holder.expandButton.setVisibility(logInfo.exception != null ? View.VISIBLE : View.GONE);
@@ -61,7 +51,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
   }
 
   @Override public int getItemCount() {
-    return logInfoList.size();
+    return logInfoRealmResults.size();
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {

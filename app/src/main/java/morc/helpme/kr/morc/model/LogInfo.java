@@ -1,15 +1,18 @@
 package morc.helpme.kr.morc.model;
 
-public class LogInfo {
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 
-  public static final String ERROR = "Error/Exception";
+public class LogInfo extends RealmObject {
+
+  @Ignore public static final String ERROR = "Error/Exception";
 
   public String title;
   public String date;
   public String type;
   public String exception;
 
-  public LogInfo(String title, String date, String type, String exception) {
+  public void initialize(String title, String date, String type, String exception) {
     this.title = title;
     this.date = date;
     this.type = type;

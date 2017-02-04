@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.LogInfo;
 
@@ -32,13 +35,17 @@ public class LogFragment extends Fragment {
   }
 
   private void setupUI() {
-    // use this setting to improve performance if you know that changes
-    // in content do not change the layout size of the RecyclerView
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    logAdapter = new LogAdapter(recyclerView);
-    recyclerView.setAdapter(logAdapter);
 
-    logAdapter.addLogInfo(new LogInfo("title", "date", "type", "exception"));
+    Realm realm = Realm.getDefaultInstance();
+    RealmResults<LogInfo> logInfoRealmResults = realm.where(LogInfo.class).findAll();
+    logAdapter = new LogAdapter(recyclerView, logInfoRealmResults);
+    logInfoRealmResults.addChangeListener(new RealmChangeListener<RealmResults<LogInfo>>() {
+      @Override public void onChange(RealmResults<LogInfo> element) {
+        logAdapter.notifyDataSetChanged();
+      }
+    });
+    recyclerView.setAdapter(logAdapter);
   }
 }

@@ -8,7 +8,8 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import morc.helpme.kr.morc.Log;
+import java.util.Date;
+import morc.helpme.kr.morc.model.LogInfo;
 import morc.helpme.kr.morc.model.RouteInfo;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
 import okhttp3.ResponseBody;
@@ -42,20 +43,32 @@ public class SMSListener extends BroadcastReceiver {
             String msgFrom = messages[i].getOriginatingAddress();
             String msgBody = messages[i].getMessageBody();
 
-            Realm realm = Realm.getDefaultInstance();
+            final Realm realm = Realm.getDefaultInstance();
             RealmResults<RouteInfo> routeInfoRealmResults = realm.where(RouteInfo.class).equalTo("enabled", true).findAll();
 
             for(int j = 0; j < routeInfoRealmResults.size(); j++) {
-              RouteInfo routeInfo = routeInfoRealmResults.get(j);
+              final RouteInfo routeInfo = routeInfoRealmResults.get(j);
               if(routeInfo.satisfyCondition(msgFrom, msgBody)) {
                 for(int k = 0; k < routeInfo.urlList.size(); k++) {
                   helpmeService.dynamic(routeInfo.urlList.get(k).str).enqueue(new Callback<ResponseBody>() {
                     @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                      Log.d("code : " + response.code());
+                      Realm realm1 = Realm.getDefaultInstance();
+                      realm1.beginTransaction();
+
+                      LogInfo logInfo = realm1.createObject(LogInfo.class);
+                      logInfo.initialize(routeInfo.title, new Date().toString(), String.valueOf(response.code()), null);
+
+                      realm1.commitTransaction();
                     }
 
                     @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-                      t.printStackTrace();
+                      Realm realm1 = Realm.getDefaultInstance();
+                      realm1.beginTransaction();
+
+                      LogInfo logInfo = realm1.createObject(LogInfo.class);
+                      logInfo.initialize(routeInfo.title, new Date().toString(), LogInfo.ERROR, t.getLocalizedMessage());
+
+                      realm1.commitTransaction();
                     }
                   });
                 }
