@@ -16,8 +16,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
-import morc.helpme.kr.morc.model.RouteInfo;
-
+import morc.helpme.kr.morc.model.Route;
 
 public class RouteListFragment extends Fragment implements RouteItemClicekListner {
 
@@ -43,10 +42,10 @@ public class RouteListFragment extends Fragment implements RouteItemClicekListne
 
     Realm realm = Realm.getDefaultInstance();
 
-    RealmResults<RouteInfo> routeInfoRealmResults = realm.where(RouteInfo.class).findAll();
-    routeInfoAdapter = new RouteInfoAdapter(routeInfoRealmResults);
-    routeInfoRealmResults.addChangeListener(new RealmChangeListener<RealmResults<RouteInfo>>() {
-      @Override public void onChange(RealmResults<RouteInfo> element) {
+    RealmResults<Route> routeRealmResults = realm.where(Route.class).findAll();
+    routeInfoAdapter = new RouteInfoAdapter(routeRealmResults);
+    routeRealmResults.addChangeListener(new RealmChangeListener<RealmResults<Route>>() {
+      @Override public void onChange(RealmResults<Route> element) {
         routeInfoAdapter.notifyDataSetChanged();
       }
     });
@@ -60,9 +59,9 @@ public class RouteListFragment extends Fragment implements RouteItemClicekListne
     startActivity(new Intent(getActivity(), RouteActivity.class));
   }
 
-  @Override public void onClickRouteInfo(int position, RouteInfo routeInfo) {
+  @Override public void onClickRouteInfo(int position, Route route) {
     Intent intent = new Intent(getActivity(), RouteActivity.class);
-    intent.putExtra("Route_id", routeInfo.id);
+    intent.putExtra("Route_id", route.id);
     startActivity(intent);
   }
 }

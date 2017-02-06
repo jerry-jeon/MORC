@@ -6,7 +6,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import java.util.regex.Pattern;
 
-public class RouteInfo extends RealmObject {
+public class Route extends RealmObject {
   @PrimaryKey public int id;
   public String title;
   public String from;

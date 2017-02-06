@@ -12,15 +12,15 @@ import butterknife.OnCheckedChanged;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import morc.helpme.kr.morc.R;
-import morc.helpme.kr.morc.model.RouteInfo;
+import morc.helpme.kr.morc.model.Route;
 
 public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.ViewHolder> {
 
-  private RealmResults<RouteInfo> routeInfoRealmResults;
+  private RealmResults<Route> routeRealmResults;
   private RouteItemClicekListner routeItemClicekListner;
 
-  public RouteInfoAdapter(RealmResults<RouteInfo> routeInfoRealmResults) {
-    this.routeInfoRealmResults = routeInfoRealmResults;
+  public RouteInfoAdapter(RealmResults<Route> routeRealmResults) {
+    this.routeRealmResults = routeRealmResults;
   }
 
   public void setRouteItemClicekListner(RouteItemClicekListner routeItemClicekListner) {
@@ -33,14 +33,14 @@ public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.View
   }
 
   @Override public void onBindViewHolder(ViewHolder holder, int position) {
-    RouteInfo routeInfo = routeInfoRealmResults.get(position);
-    holder.titleTextView.setText(routeInfo.title);
-    holder.infoTextView.setText(routeInfo.from + ", " + routeInfo.regex);
-    holder.enabledSwitch.setChecked(routeInfo.enabled);
+    Route route = routeRealmResults.get(position);
+    holder.titleTextView.setText(route.title);
+    holder.infoTextView.setText(route.from + ", " + route.regex);
+    holder.enabledSwitch.setChecked(route.enabled);
   }
 
   @Override public int getItemCount() {
-    return routeInfoRealmResults.size();
+    return routeRealmResults.size();
   }
 
   class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,7 +52,7 @@ public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.View
     @OnCheckedChanged(R.id.switch_enabled) void onCheckChange(boolean isChecked) {
       Realm realm = Realm.getDefaultInstance();
       realm.beginTransaction();
-      routeInfoRealmResults.get(getAdapterPosition()).enabled = isChecked;
+      routeRealmResults.get(getAdapterPosition()).enabled = isChecked;
       realm.commitTransaction();
     }
 
@@ -61,7 +61,7 @@ public class RouteInfoAdapter extends RecyclerView.Adapter<RouteInfoAdapter.View
       ButterKnife.bind(this, itemView);
       itemView.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View view) {
-          routeItemClicekListner.onClickRouteInfo(getAdapterPosition(), routeInfoRealmResults.get(getAdapterPosition()));
+          routeItemClicekListner.onClickRouteInfo(getAdapterPosition(), routeRealmResults.get(getAdapterPosition()));
         }
       });
     }

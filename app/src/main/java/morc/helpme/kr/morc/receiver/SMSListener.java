@@ -8,11 +8,16 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import morc.helpme.kr.morc.model.Envelope;
 import morc.helpme.kr.morc.model.LogInfo;
-import morc.helpme.kr.morc.model.RouteInfo;
+import morc.helpme.kr.morc.model.Payload;
+import morc.helpme.kr.morc.model.Route;
+import morc.helpme.kr.morc.model.SMSInfo;
+import morc.helpme.kr.morc.model.Trigger;
 import morc.helpme.kr.morc.retrofit.HelpmeService;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -49,19 +54,28 @@ public class SMSListener extends BroadcastReceiver {
             String msgBody = messages[i].getMessageBody();
 
             final Realm realm = Realm.getDefaultInstance();
-            RealmResults<RouteInfo> routeInfoRealmResults = realm.where(RouteInfo.class).equalTo("enabled", true).findAll();
+            RealmResults<Route>
+                routeRealmResults = realm.where(Route.class).equalTo("enabled", true).findAll();
 
-            for(int j = 0; j < routeInfoRealmResults.size(); j++) {
-              final RouteInfo routeInfo = routeInfoRealmResults.get(j);
-              if(routeInfo.satisfyCondition(msgFrom, msgBody)) {
-                for(int k = 0; k < routeInfo.urlList.size(); k++) {
-                  helpmeService.dynamic(routeInfo.urlList.get(k).str, routeInfo.authorization).enqueue(new Callback<ResponseBody>() {
+            for(int j = 0; j < routeRealmResults.size(); j++) {
+              final Route route = routeRealmResults.get(j);
+              if(route.satisfyCondition(msgFrom, msgBody)) {
+                for(int k = 0; k < route.urlList.size(); k++) {
+                  Trigger trigger = new Trigger(route);
+                  Envelope envelope = new Envelope(msgFrom);
+                  //TODO title
+                  Payload payload = new Payload("a", msgBody);
+                  Timestamp timestamp = new Timestamp(messages[i].getTimestampMillis());
+
+                  SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp);
+
+                  helpmeService.dynamic(route.urlList.get(k).str, route.authorization, smsInfo).enqueue(new Callback<ResponseBody>() {
                     @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                       Realm realm1 = Realm.getDefaultInstance();
                       realm1.beginTransaction();
 
                       LogInfo logInfo = realm1.createObject(LogInfo.class);
-                      logInfo.initialize(routeInfo.title, formattedDate(), String.valueOf(response.code()), null);
+                      logInfo.initialize(route.title, formattedDate(), String.valueOf(response.code()), null);
 
                       realm1.commitTransaction();
                     }
@@ -71,7 +85,7 @@ public class SMSListener extends BroadcastReceiver {
                       realm1.beginTransaction();
 
                       LogInfo logInfo = realm1.createObject(LogInfo.class);
-                      logInfo.initialize(routeInfo.title, formattedDate(), LogInfo.ERROR, t.toString());
+                      logInfo.initialize(route.title, formattedDate(), LogInfo.ERROR, t.toString());
 
                       realm1.commitTransaction();
                     }

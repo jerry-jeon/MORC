@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import morc.helpme.kr.morc.R;
 import morc.helpme.kr.morc.model.RealmString;
-import morc.helpme.kr.morc.model.RouteInfo;
+import morc.helpme.kr.morc.model.Route;
 
 public class RouteActivity extends AppCompatActivity {
 
@@ -41,7 +41,7 @@ public class RouteActivity extends AppCompatActivity {
   private int type;
 
   private List<TextInputEditText> urlViewList;
-  private RouteInfo routeInfo;
+  private Route route;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -105,15 +105,15 @@ public class RouteActivity extends AppCompatActivity {
   private void readRouteInfo(int id) {
     Realm realm = Realm.getDefaultInstance();
     try {
-      routeInfo = realm.where(RouteInfo.class).equalTo("id", id).findFirst();
-      editTitle.setText(routeInfo.title);
-      editFrom.setText(routeInfo.from);
-      editRegex.setText(routeInfo.regex);
-      editAuthorization.setText(routeInfo.authorization);
-      for(int i = 0; i < routeInfo.urlList.size(); i++) {
-        addUrlView(routeInfo.urlList.get(i).str);
+      route = realm.where(Route.class).equalTo("id", id).findFirst();
+      editTitle.setText(route.title);
+      editFrom.setText(route.from);
+      editRegex.setText(route.regex);
+      editAuthorization.setText(route.authorization);
+      for(int i = 0; i < route.urlList.size(); i++) {
+        addUrlView(route.urlList.get(i).str);
       }
-      getSupportActionBar().setTitle(routeInfo.title);
+      getSupportActionBar().setTitle(route.title);
     } finally {
       realm.close();
     }
@@ -151,16 +151,16 @@ public class RouteActivity extends AppCompatActivity {
           case TYPE_NEW:
             realm.beginTransaction();
 
-            RouteInfo newRouteInfo = realm.createObject(RouteInfo.class, getRouteInfoNextKey());
-            newRouteInfo.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
+            Route newRoute = realm.createObject(Route.class, getRouteInfoNextKey());
+            newRoute.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
                 editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
 
             realm.commitTransaction();
-            intent.putExtra("Route_id", newRouteInfo.id);
+            intent.putExtra("Route_id", newRoute.id);
             break;
           case TYPE_EDIT:
             realm.beginTransaction();
-            routeInfo.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
+            route.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
                 editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
             realm.commitTransaction();
             break;
@@ -176,7 +176,7 @@ public class RouteActivity extends AppCompatActivity {
               @Override public void onClick(DialogInterface dialogInterface, int i) {
                 Realm realm1 = Realm.getDefaultInstance();
                 realm1.beginTransaction();
-                routeInfo.deleteFromRealm();
+                route.deleteFromRealm();
                 realm1.commitTransaction();
                 finish();
               }
@@ -193,7 +193,7 @@ public class RouteActivity extends AppCompatActivity {
   {
     try {
       Realm realm = Realm.getDefaultInstance();
-      return realm.where(RouteInfo.class).max("id").intValue() + 1;
+      return realm.where(Route.class).max("id").intValue() + 1;
     } catch (Exception e) {
       return 0;
     }
