@@ -97,10 +97,6 @@ public class MMSReceiver extends BroadcastReceiver {
     String msgFrom = parseNumber(context, id);
     String msgBody = parseMessage(context, id);
 
-    //Log.d("subject : " + subject);
-    Log.d(msgFrom);
-    Log.d("Msg : " + msgBody);
-
     final Realm realm = Realm.getDefaultInstance();
     RealmResults<Route>
         routeRealmResults = realm.where(Route.class).equalTo("enabled", true).findAll();
@@ -109,17 +105,14 @@ public class MMSReceiver extends BroadcastReceiver {
       final Route route = routeRealmResults.get(j);
       if(route.satisfyCondition(msgFrom, msgBody)) {
         for(int k = 0; k < route.urlList.size(); k++) {
-          Log.d("??");
           Trigger trigger = new Trigger(route);
           Envelope envelope = new Envelope(msgFrom);
           Payload payload = new Payload(msgBody);
 
-          SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp);
-          Log.d("SMSINFO ~~~~  : " + smsInfo);
+          SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp, tagToArray(route.tag));
 
           helpmeService.dynamic(route.urlList.get(k).str, route.authorization, smsInfo).enqueue(new Callback<ResponseBody>() {
             @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-              Log.d("SUC");
               Realm realm1 = Realm.getDefaultInstance();
               realm1.beginTransaction();
 
@@ -130,8 +123,6 @@ public class MMSReceiver extends BroadcastReceiver {
             }
 
             @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-              Log.d("FAILED");
-              t.printStackTrace();
               Realm realm1 = Realm.getDefaultInstance();
               realm1.beginTransaction();
 
@@ -253,6 +244,14 @@ public class MMSReceiver extends BroadcastReceiver {
   private String formattedDate() {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
     return format.format(new Date());
+  }
+
+  public String[] tagToArray(String tag) {
+    String[] results = tag.split(",");
+    for(int i = 0; i < results.length; i++) {
+      results[i] = results[i].trim();
+    }
+    return results;
   }
 
 }

@@ -12,16 +12,18 @@ public class Route extends RealmObject {
   public String from;
   public String regex;
   public String authorization;
+  public String tag;
   public RealmList<RealmString> urlList;
   public boolean enabled;
 
   public void initialize(String title, String from, String regex,
-      String authorization, RealmList<RealmString> urlList, boolean enabled) {
+      String authorization, String tag, RealmList<RealmString> urlList, boolean enabled) {
     this.title = title;
     this.from = from;
     this.regex = regex;
     this.authorization = authorization;
     this.urlList = urlList;
+    this.tag = tag;
     this.enabled = enabled;
   }
 

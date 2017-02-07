@@ -65,7 +65,7 @@ public class SMSReceiver extends BroadcastReceiver {
                   Payload payload = new Payload(msgBody);
                   long timestamp = messages[i].getTimestampMillis() / 1000;
 
-                  SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp);
+                  SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp, tagToArray(route.tag));
 
                   helpmeService.dynamic(route.urlList.get(k).str, route.authorization, smsInfo).enqueue(new Callback<ResponseBody>() {
                     @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -118,5 +118,13 @@ public class SMSReceiver extends BroadcastReceiver {
   private String formattedDate() {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
     return format.format(new Date());
+  }
+
+  public String[] tagToArray(String tag) {
+    String[] results = tag.split(",");
+    for(int i = 0; i < results.length; i++) {
+      results[i] = results[i].trim();
+    }
+    return results;
   }
 }

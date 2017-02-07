@@ -35,6 +35,7 @@ public class RouteActivity extends AppCompatActivity {
   @BindView(R.id.toolbar) Toolbar toolbar;
   @BindView(R.id.layout_urls) LinearLayout layout;
   @BindView(R.id.edit_title) TextInputEditText editTitle;
+  @BindView(R.id.edit_tags) TextInputEditText editTags;
   @BindView(R.id.edit_from) TextInputEditText editFrom;
   @BindView(R.id.edit_regex) TextInputEditText editRegex;
   @BindView(R.id.edit_authorization) TextInputEditText editAuthorization;
@@ -113,6 +114,7 @@ public class RouteActivity extends AppCompatActivity {
       for(int i = 0; i < route.urlList.size(); i++) {
         addUrlView(route.urlList.get(i).str);
       }
+      editTags.setText(route.tag);
       getSupportActionBar().setTitle(route.title);
     } finally {
       realm.close();
@@ -153,7 +155,8 @@ public class RouteActivity extends AppCompatActivity {
 
             Route newRoute = realm.createObject(Route.class, getRouteInfoNextKey());
             newRoute.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
-                editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
+                editRegex.getText().toString(), editAuthorization.getText().toString(),
+                editTags.getText().toString(), getUrlsFromViewList(), true);
 
             realm.commitTransaction();
             intent.putExtra("Route_id", newRoute.id);
@@ -161,7 +164,8 @@ public class RouteActivity extends AppCompatActivity {
           case TYPE_EDIT:
             realm.beginTransaction();
             route.initialize(editTitle.getText().toString(), editFrom.getText().toString(),
-                editRegex.getText().toString(), editAuthorization.getText().toString(), getUrlsFromViewList(), true);
+                editRegex.getText().toString(), editAuthorization.getText().toString(),
+                editTags.getText().toString(), getUrlsFromViewList(), true);
             realm.commitTransaction();
             break;
         }
@@ -189,8 +193,7 @@ public class RouteActivity extends AppCompatActivity {
     }
   }
 
-  private int getRouteInfoNextKey()
-  {
+  private int getRouteInfoNextKey() {
     try {
       Realm realm = Realm.getDefaultInstance();
       return realm.where(Route.class).max("id").intValue() + 1;
