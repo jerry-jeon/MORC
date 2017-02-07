@@ -18,6 +18,9 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
   private RecyclerView recyclerView;
   private RealmResults<LogInfo> logInfoRealmResults;
   private int expandedPosition = -1;
+  private static final int PAGINATION_SIZE = 20;
+
+  private int page = 1;
 
   public LogAdapter(RecyclerView recyclerView, RealmResults<LogInfo> logInfoRealmResults) {
     this.recyclerView = recyclerView;
@@ -53,7 +56,19 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
   }
 
   @Override public int getItemCount() {
-    return logInfoRealmResults.size();
+    return Math.min(logInfoRealmResults.size(), page * PAGINATION_SIZE);
+  }
+
+  public boolean nextpage() {
+    int previousPosition = getItemCount();
+    int diff = getItemCount() - previousPosition;
+    if(diff > 0) {
+      notifyItemRangeInserted(previousPosition, getItemCount() - previousPosition);
+      page++;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
