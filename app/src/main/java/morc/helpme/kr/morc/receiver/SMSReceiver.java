@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -28,7 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SMSListener extends BroadcastReceiver {
+public class SMSReceiver extends BroadcastReceiver {
 
   private Retrofit retrofit;
   private HelpmeService helpmeService;
@@ -63,9 +62,8 @@ public class SMSListener extends BroadcastReceiver {
                 for(int k = 0; k < route.urlList.size(); k++) {
                   Trigger trigger = new Trigger(route);
                   Envelope envelope = new Envelope(msgFrom);
-                  //TODO title
-                  Payload payload = new Payload("a", msgBody);
-                  Timestamp timestamp = new Timestamp(messages[i].getTimestampMillis());
+                  Payload payload = new Payload(msgBody);
+                  long timestamp = messages[i].getTimestampMillis() / 1000;
 
                   SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp);
 
@@ -118,7 +116,7 @@ public class SMSListener extends BroadcastReceiver {
   }
 
   private String formattedDate() {
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.KOREA);
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
     return format.format(new Date());
   }
 }

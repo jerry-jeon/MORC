@@ -8,4 +8,8 @@ public class Payload {
     this.subject = subject;
     this.text = text;
   }
+
+  public Payload(String text) {
+    this.text = text;
+  }
 }

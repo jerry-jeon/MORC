@@ -9,11 +9,7 @@ import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
+import com.karumi.dexter.listener.multi.EmptyMultiplePermissionsListener;
 import morc.helpme.kr.morc.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,21 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
   private void initializeDexter() {
     Dexter.withActivity(this)
-        .withPermission(Manifest.permission.RECEIVE_SMS)
-        .withListener(new PermissionListener() {
-          @Override public void onPermissionGranted(PermissionGrantedResponse response) {
-
-          }
-
-          @Override public void onPermissionDenied(PermissionDeniedResponse response) {
-
-          }
-
-          @Override public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
-              PermissionToken token) {
-
-          }
-        })
+        .withPermissions(
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.RECEIVE_MMS,
+            Manifest.permission.RECEIVE_WAP_PUSH,
+            Manifest.permission.READ_SMS)
+        .withListener(new EmptyMultiplePermissionsListener())
         .check();
 
   }
