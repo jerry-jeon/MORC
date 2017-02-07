@@ -1,6 +1,5 @@
 package morc.helpme.kr.morc.ui;
 
-import android.support.transition.TransitionManager;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,8 +47,7 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.ViewHolder> {
     holder.expandButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {
         expandedPosition = isExpaned ? -1 : position;
-        TransitionManager.beginDelayedTransition(recyclerView);
-        notifyDataSetChanged();
+        notifyItemChanged(position);
       }
     });
 
