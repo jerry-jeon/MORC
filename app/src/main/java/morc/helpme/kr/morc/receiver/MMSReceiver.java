@@ -13,12 +13,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import morc.helpme.kr.morc.Log;
 import morc.helpme.kr.morc.model.Envelope;
 import morc.helpme.kr.morc.model.LogInfo;
 import morc.helpme.kr.morc.model.Payload;
@@ -54,42 +52,16 @@ public class MMSReceiver extends BroadcastReceiver {
     ContentResolver contentResolver = context.getContentResolver();
     final String[] projection = new String[] { "_id", "sub", "date"};
     Uri uri = Uri.parse("content://mms");
-    Cursor cursor = contentResolver.query(uri, null, null, null, "_id desc limit 1");
+    Cursor cursor = contentResolver.query(uri, projection, null, null, "_id desc limit 1");
     if (cursor.getCount() == 0) {
       cursor.close();
       return;
     }
 
-
     cursor.moveToFirst();
-    for(int i = 0 ; i < cursor.getColumnCount(); i++) {
-      Log.d("col : " + cursor.getColumnName(i));
-      int type = cursor.getType(i);
-      switch (type) {
-        case Cursor.FIELD_TYPE_BLOB:
-          Log.d("blob : " + cursor.getBlob(i));
-          break;
-        case Cursor.FIELD_TYPE_FLOAT:
-          Log.d("float : " + cursor.getFloat(i));
-          break;
-        case Cursor.FIELD_TYPE_INTEGER:
-          Log.d("int : " + cursor.getInt(i));
-          break;
-        case Cursor.FIELD_TYPE_STRING:
-          Log.d("string : " + cursor.getString(i));
-          break;
-      }
-    }
 
     String id = cursor.getString(cursor.getColumnIndex("_id"));
-    byte[] bytes = cursor.getString(cursor.getColumnIndex("sub")).getBytes();
-    Log.d("s1 : " + new String(bytes, Charset.forName("EUC-KR")));
-    Log.d("s2 : " + new String(bytes, Charset.forName("KSC5601")));
-    Log.d("s3 : " + new String(bytes, Charset.forName("ISO-8859-1")));
-    for(int i = 0; i < bytes.length; i++) {
-      Log.d("byte : " + bytes[i]);
-    }
-    //Log.d("s3 : " + new String(bytes, Charset.forName(""));
+    String subject = cursor.getString(cursor.getColumnIndex("sub"));
     long timestamp = cursor.getInt(cursor.getColumnIndex("date"));
 
     cursor.close();
@@ -107,7 +79,7 @@ public class MMSReceiver extends BroadcastReceiver {
         for(int k = 0; k < route.urlList.size(); k++) {
           Trigger trigger = new Trigger(route);
           Envelope envelope = new Envelope(msgFrom);
-          Payload payload = new Payload(msgBody);
+          Payload payload = new Payload(subject, msgBody);
 
           SMSInfo smsInfo = new SMSInfo(trigger, envelope, payload, timestamp, tagToArray(route.tag));
 
