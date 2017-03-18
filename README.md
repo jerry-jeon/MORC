@@ -17,7 +17,7 @@ Routing data
 | regex | Used for match message |
 
 
-Can contain only one condition. If you provide both, the message must satisfy both.
+You can provide only one condition. If you provide both, the message must satisfy both.
 
 ### Request
 | Name | Description |
