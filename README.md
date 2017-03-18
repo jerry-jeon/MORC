@@ -15,6 +15,8 @@ Routing data
 | ---- |-------------|
 | from | Sender's number |
 | regex | Used for match message |
+
+
 Can contain only one condition. If you provide both, the message must satisfy both.
 
 ### Request
